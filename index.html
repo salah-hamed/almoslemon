@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>المسلمون يذكرون</title>
+  <meta property="og:title" content="المسلمون يذكرون — عداد الأذكار اليومي" />
+  <meta property="og:description" content="ذكّر نفسك واحصل على تحفيز يومي مع عداد الأذكار. تابع تقدمك وشارك الأجر!" />
+  <meta property="og:image" content="icons/icon-512.png" />
+  <meta property="og:url" content="" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;900&family=Scheherazade+New:wght@700&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#2563eb" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Cairo', 'Scheherazade New', sans-serif;
+      background: linear-gradient(to bottom, #e0f2fe, #f9fafb);
+      color: #111827;
+      direction: rtl;
+      text-align: center;
+      transition: background 0.3s, color 0.3s;
+    }
+    body.dark {
+      background: #0f172a;
+      color: #f9fafb;
+    }
+    .header {
+      background: #2563eb;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+    }
+    .header-title {
+      font-family: 'Scheherazade New', serif;
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+    .logo { display: flex; align-items: center; gap: 0.6rem; }
+    .logo img { width: 40px; height: 40px; border-radius: 50%; }
+    #toggle-dark { background: #fbbf24; color: #1e3a8a; border: none; border-radius: 2rem; padding: 0.4rem 1rem; font-size: 1rem; cursor: pointer; }
+    #toggle-dark.dark { background: #334155; color: #fde047; }
+    .slider-wrapper { position: relative; max-width: 500px; margin: 2rem auto 1rem auto; overflow: hidden; min-height: 430px; }
+    .slide { display: none; width: 100%; transition: opacity 0.3s; }
+    .slide.active { display: block; opacity: 1; }
+    .arrow-btn { position: absolute; top: 50%; transform: translateY(-50%); background: #2563ebbb; color: #fff; border: none; border-radius: 50%; font-size: 2.2rem; cursor: pointer; width: 2.6rem; height: 2.6rem; z-index: 5; opacity: 0.9; transition: background 0.2s; }
+    .arrow-btn:active { background: #2563ebee;}
+    .arrow-left { right: 4px;}
+    .arrow-right { left: 4px;}
+    .counter {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      min-height: 340px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    body.dark .counter { background: #1e2a3a; color: #eee; }
+    .zikr-btn {
+      background: linear-gradient(90deg, #fde68a, #fbbf24 90%);
+      border: none; font-size: 1.45rem; font-weight: bold; padding: 1.1rem; width: 100%; border-radius: 1.1rem; color: #1e3a8a; cursor: pointer; margin-bottom: 0.6rem; outline: none; transition: transform 0.13s;
+    }
+    .zikr-btn .benefit { font-size: 1rem; display: block; color: #166534; margin-top: 0.5rem; }
+    .zikr-btn:active { transform: scale(0.98); background: linear-gradient(90deg, #bbf7d0 8%, #818cf8 95%); }
+    .count-display { font-size: 2.15rem; font-weight: bold; color: #10b981; margin: 1rem 0 0.5rem 0; }
+    body.dark .count-display { color: #fbbf24;}
+    .goal { font-size: 1rem; color: #666; margin-bottom: 0.7rem; }
+    .total-display { font-size: 1.04rem; color: #1e3a8a; font-weight: 600; margin-bottom: 0.7rem; }
+    body.dark .total-display { color: #fbbf24;}
+    .progress-wrapper { width: 90%; margin-top: 0.6rem; text-align: center; }
+    .progress-bar { background: #e6f4ff; border-radius: 999px; height: 12px; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0%; border-radius: 999px; background: linear-gradient(90deg,#34d399,#10b981); transition: width 0.4s; }
+    .progress-text { font-size: 0.95rem; margin-top: 0.4rem; color: #374151; }
+    .share-btn { background: #3b82f6; color: #fff; border: none; border-radius: 2rem; padding: 0.6rem 1.4rem; font-size: 1rem; cursor: pointer; margin-top: 0.75rem; }
+    .ads { max-width: 480px; margin: 2rem auto 0.7rem auto; text-align: center; font-size: 0.97rem; color: #555; }
+    .ads .ad-note { font-weight: bold; color: #7c3aed; margin-bottom: 0.5rem; }
+    .nav-links { text-align: center; margin: 2.3rem auto 1rem; font-size: 0.95rem; }
+    .nav-links a { color: #2563eb; margin: 0 .5rem; text-decoration: none; }
+    @media (max-width: 600px) { .counter, .slider-wrapper { max-width: 99vw; padding-left: 0; padding-right: 0;} .slide { min-height: 400px;} }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <img src="icons/icon-192.png" alt="سبحة" />
+      <span class="header-title">المسلمون يذكرون</span>
+    </div>
+    <button id="toggle-dark">🌙</button>
+  </div>
+
+  <div class="slider-wrapper">
+    <button class="arrow-btn arrow-right" id="arrow-right" aria-label="التالي">⟩</button>
+    <button class="arrow-btn arrow-left" id="arrow-left" aria-label="السابق">⟨</button>
+    <div id="slides"></div>
+  </div>
+
+  <div class="ads">
+    <div class="ad-note">إعلاناتنا وسيلة لاستمرار التطبيق مجانًا 🤝</div>
+    <ins class="adsbygoogle"
+      style="display:block"
+      data-ad-client="ca-pub-1234567890123456"
+      data-ad-slot="1234567890"
+      data-ad-format="auto"
+      data-full-width-responsive="true"></ins>
+  </div>
+
+  <div class="nav-links">
+    <a href="about.html">من نحن</a> |
+    <a href="privacy.html">سياسة الخصوصية</a>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    // Firebase config (as provided)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBq-VNrZxL6d_hO8r4u2tn7qTpyyaoWEsQ",
+      authDomain: "azkar-counter.firebaseapp.com",
+      projectId: "azkar-counter",
+      storageBucket: "azkar-counter.appspot.com",
+      messagingSenderId: "981234567890",
+      appId: "1:981234567890:web:abcdefgh12345678"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // utilities
+    const today = new Date().toISOString().split("T")[0];
+    const uid = localStorage.getItem("uid") || (() => { const id = "user_" + Math.random().toString().slice(2,10); localStorage.setItem("uid", id); return id; })();
+
+    // config
+    const DAILY_GOAL = 100;
+    const FLUSH_INTERVAL_MS = 60 * 1000; // flush queue every 60s
+    const MIN_FLUSH_THRESHOLD = 3; // only flush if >= this many increments queued (to reduce writes)
+
+    const azkar = [
+      { key: 'zikr_nabi', text: 'الصلاة على النبي ﷺ', benefit: '✦ شفاعة ورحمة بإذن الله' },
+      { key: 'zikr_subhan', text: 'سبحان الله ✨', benefit: '✦ من أحب الكلام إلى الله' },
+      { key: 'zikr_hamd', text: 'الحمد لله 🙏', benefit: '✦ تملأ الميزان' },
+      { key: 'zikr_la', text: 'لا إله إلا الله 🕊️', benefit: '✦ أعظم الذكر ومفتاح الجنة' },
+      { key: 'zikr_akbar', text: 'الله أكبر 🌟', benefit: '✦ أعظم من كل شيء' },
+      { key: 'zikr_astaghfir', text: 'استغفر الله 🤍', benefit: '✦ يمنحك راحة وسعة في الرزق' }
+    ];
+
+    // queue for pending increments to be flushed to Firestore
+    function getQueue() { return JSON.parse(localStorage.getItem('pending_queue') || '{}'); }
+    function saveQueue(q) { localStorage.setItem('pending_queue', JSON.stringify(q)); }
+
+    function enqueueIncrement(key, n=1) {
+      const q = getQueue();
+      q[key] = (q[key] || 0) + n;
+      saveQueue(q);
+    }
+
+    async function flushQueueIfNeeded(force = false) {
+      const q = getQueue();
+      const totalPending = Object.values(q).reduce((s,v)=>s+v,0);
+      if (!force && totalPending < MIN_FLUSH_THRESHOLD) return;
+      if (totalPending === 0) return;
+      // Prepare a single write updating the daily aggregate doc with atomic increments
+      const docRef = db.collection('daily_totals').doc(today);
+      const updateData = {};
+      Object.keys(q).forEach(k => updateData[k] = firebase.firestore.FieldValue.increment(q[k]));
+      try {
+        await docRef.set(updateData, { merge: true });
+        // clear queue after success
+        localStorage.removeItem('pending_queue');
+        // mark synced flag for each key (for UX)
+        Object.keys(q).forEach(k => localStorage.setItem(`${k}_synced`, today));
+      } catch (err) {
+        console.warn('Flush failed, will retry later', err);
+        // keep queue for retry
+      }
+    }
+
+    // Build slides with fixed total logic and progress bar
+    const slidesDiv = document.getElementById('slides');
+    azkar.forEach(({key, text, benefit}) => {
+      // load logs
+      const log = JSON.parse(localStorage.getItem(`${key}_log`) || "{}");
+      let count = log[today] || 0;
+      let total = parseInt(localStorage.getItem(`${key}_total`) || '0', 10);
+
+      const slide = document.createElement('div'); slide.className = 'slide';
+      const box = document.createElement('div'); box.className = 'counter';
+
+      const btn = document.createElement('button'); btn.className = 'zikr-btn';
+      btn.innerHTML = `<span>${text}</span><span class="benefit">${benefit}</span>`;
+
+      const countEl = document.createElement('div'); countEl.className = 'count-display'; countEl.textContent = count;
+      const goalEl = document.createElement('div'); goalEl.className = 'goal'; goalEl.textContent = count >= DAILY_GOAL ? "✅ تم بلوغ الهدف اليومي!" : `🎯 الهدف اليومي: ${DAILY_GOAL}`;
+      const totalEl = document.createElement('div'); totalEl.className = 'total-display'; totalEl.textContent = `📈 الإجمالي: ${total}`;
+
+      // progress bar elements
+      const progressWrapper = document.createElement('div'); progressWrapper.className = 'progress-wrapper';
+      const progressBar = document.createElement('div'); progressBar.className = 'progress-bar';
+      const progressFill = document.createElement('div'); progressFill.className = 'progress-fill';
+      const progressText = document.createElement('div'); progressText.className = 'progress-text';
+      progressBar.appendChild(progressFill); progressWrapper.appendChild(progressBar); progressWrapper.appendChild(progressText);
+
+      // share button
+      const share = document.createElement('button'); share.className = 'share-btn'; share.textContent = "شاركني الأجر";
+
+      // update UI helper
+      function updateUI() {
+        countEl.textContent = count;
+        goalEl.textContent = count >= DAILY_GOAL ? "✅ تم بلوغ الهدف اليومي!" : `🎯 الهدف اليومي: ${DAILY_GOAL}`;
+        // recalc total from storage to ensure correctness
+        total = parseInt(localStorage.getItem(`${key}_total`) || '0', 10);
+        totalEl.textContent = `📈 الإجمالي: ${total}`;
+        const pct = Math.min(100, Math.round((count / DAILY_GOAL) * 100));
+        progressFill.style.width = pct + '%';
+        progressText.textContent = `أكملت ${pct}% من الهدف اليومي (${count}/${DAILY_GOAL})`;
+      }
+
+      btn.onclick = () => {
+        // increment local counters
+        count++;
+        log[today] = count;
+        localStorage.setItem(`${key}_log`, JSON.stringify(log));
+        // read latest total from storage, increment and save
+        total = parseInt(localStorage.getItem(`${key}_total`) || '0', 10);
+        total = total + 1;
+        localStorage.setItem(`${key}_total`, String(total));
+        // enqueue increment to flush later
+        enqueueIncrement(key, 1);
+        updateUI();
+        // feedback sound (non-blocking)
+        try { new Audio('https://cdn.pixabay.com/audio/2022/10/16/audio_12b2548572.mp3').play(); } catch(e){}
+      };
+
+      share.onclick = async () => {
+        const msg = `ذكرت ${count} × "${text}" اليوم في تطبيق المسلمون يذكرون.\n${benefit}\nانضمّوا للذكر وشارك الأجر!`;
+        const shareUrl = `${location.origin}${location.pathname}?ref=${uid}&z=${encodeURIComponent(key)}&d=${today}`;
+        // set og:url dynamically for better preview on some platforms (note: some platforms fetch server-side)
+        try {
+          if (navigator.share) {
+            await navigator.share({ title: 'أذكاري - المسلمون يذكرون', text: msg, url: shareUrl });
+          } else {
+            await navigator.clipboard.writeText(msg + '\n' + shareUrl);
+            alert("📋 تم نسخ نص المشاركة والرابط. ألصقه لمشاركته.");
+          }
+        } catch (err) {
+          // fallback: copy
+          await navigator.clipboard.writeText(msg + '\n' + shareUrl);
+          alert("📋 تم نسخ نص المشاركة والرابط. ألصقه لمشاركته.");
+        }
+      };
+
+      box.appendChild(btn);
+      box.appendChild(countEl);
+      box.appendChild(goalEl);
+      box.appendChild(progressWrapper);
+      box.appendChild(totalEl);
+      box.appendChild(share);
+      slide.appendChild(box);
+      slidesDiv.appendChild(slide);
+      // initial UI update
+      updateUI();
+      // mark synced if needed
+      if (localStorage.getItem(`${key}_synced`) !== today && count > 0) {
+        enqueueIncrement(key, 0); // ensure queue exists
+      }
+    });
+
+    // slider controls
+    let current = 0;
+    function refreshSlides() {
+      const allSlides = document.querySelectorAll('.slide');
+      if (allSlides.length === 0) return;
+      function showSlide(idx) {
+        if (idx < 0) idx = 0;
+        if (idx >= allSlides.length) idx = allSlides.length - 1;
+        current = idx;
+        allSlides.forEach((el,i)=> el.classList.toggle('active',i===current));
+      }
+      showSlide(0);
+      document.getElementById('arrow-right').onclick = () => showSlide(Math.min(current+1,allSlides.length-1));
+      document.getElementById('arrow-left').onclick  = () => showSlide(Math.max(current-1,0));
+      // touch support
+      let startX = null;
+      const slidesDivLocal = document.getElementById('slides');
+      slidesDivLocal.addEventListener('touchstart', function(e){ startX = e.touches[0].clientX; });
+      slidesDivLocal.addEventListener('touchend', function(e){
+        if (startX == null) return;
+        const endX = e.changedTouches[0].clientX;
+        const dx = endX - startX;
+        if (Math.abs(dx) > 40) {
+          if (dx < 0) showSlide(current+1);
+          if (dx > 0) showSlide(current-1);
+        }
+        startX = null;
+      });
+    }
+    refreshSlides();
+
+    // periodic flush
+    setInterval(() => flushQueueIfNeeded(false), FLUSH_INTERVAL_MS);
+
+    // flush on visibility change or before unload
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushQueueIfNeeded(true); });
+    window.addEventListener('pagehide', () => { flushQueueIfNeeded(true); });
+    window.addEventListener('beforeunload', (e) => { flushQueueIfNeeded(true); });
+
+    // dark mode
+    const toggle = document.getElementById("toggle-dark");
+    toggle.onclick = () => {
+      const isDark = !document.body.classList.contains("dark");
+      document.body.classList.toggle("dark", isDark);
+      toggle.classList.toggle("dark", isDark);
+      toggle.textContent = isDark ? "☀️" : "🌙";
+      localStorage.setItem("darkMode", isDark ? "on" : "off");
+    };
+    if (localStorage.getItem("darkMode") === "on") {
+      document.body.classList.add("dark");
+      toggle.classList.add("dark");
+      toggle.textContent = "☀️";
+    }
+
+    // init: try an initial flush after short delay
+    setTimeout(()=>flushQueueIfNeeded(false), 5000);
+
+    // AdSense
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+
+  <!-- register service worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('service-worker.js').then(function(reg){ console.log('sw registered', reg); }).catch(function(err){ console.warn('sw failed', err); });
+      });
+    }
+  </script>
+</body>
+</html>
