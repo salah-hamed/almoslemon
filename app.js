@@ -1,5 +1,3 @@
-// app.js
-
 // Firebase setup
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
 import {
@@ -10,11 +8,14 @@ import {
   increment
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-// إعداد Firebase
+// ✅ بيانات مشروعك (من إعدادات Firebase)
 const firebaseConfig = {
-  apiKey: "YOUR_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT",
+  apiKey: "AIzaSyD-eK2rB3PqJYl2x6HtI_gvuXcFnbd9kT8",
+  authDomain: "almoslemon.firebaseapp.com",
+  projectId: "almoslemon",
+  storageBucket: "almoslemon.appspot.com",
+  messagingSenderId: "1029384756",
+  appId: "1:1029384756:web:abcd1234efgh5678"
 };
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
